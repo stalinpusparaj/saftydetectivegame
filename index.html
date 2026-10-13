@@ -26,10 +26,14 @@
 <meta name="twitter:description" content="A bilingual (English + தமிழ்) 3D safety game for children aged 4–7.">
 <meta name="twitter:image" content="https://stalinpusparaj.github.io/saftydetectivegame/thumbnail.jpg">
 <meta name="twitter:image:alt" content="Anil the squirrel detective, Inspector Gaja, Constable Vaalu and Nari the Trickster in the Detective Town square">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Baloo+Thambi+2:wght@500;700;800&display=swap">
+<!-- fonts and Three.js are bundled with the game: nothing loads from other sites -->
+<link rel="preload" href="fonts/baloo2-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/baloothambi2-tamil.woff2" as="font" type="font/woff2" crossorigin>
 <style>
+/* Baloo 2 and Baloo Thambi 2 (SIL Open Font License 1.1, see fonts/OFL-*.txt), variable weight 400–800 */
+@font-face{font-family:'Baloo 2';font-style:normal;font-weight:400 800;font-display:swap;src:url(fonts/baloo2-latin.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'Baloo Thambi 2';font-style:normal;font-weight:400 800;font-display:swap;src:url(fonts/baloothambi2-tamil.woff2) format('woff2');unicode-range:U+0964-0965, U+0B82-0BFA, U+200C-200D, U+20B9, U+25CC}
+@font-face{font-family:'Baloo Thambi 2';font-style:normal;font-weight:400 800;font-display:swap;src:url(fonts/baloothambi2-latin.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
 /* Layout concept: a full-bleed 3D toy diorama with a chunky, icon-first toy-button overlay floating above it. */
 :root{
   --sky:#BFE6FF; --sky-d:#9FD3F5; --grass:#9ED36A; --path:#F3D9A4; --wall:#FFF4E0;
@@ -337,7 +341,7 @@ body.rm #wipe{transition:opacity .3s}
 body.rm .pulse,body.rm .bub.next{animation:none}
 body.rm #hand span{animation-duration:2.4s}
 </style>
-<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script>
+<script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js"}}</script>
 </head>
 <body>
 <canvas id="game" aria-label="Safety Detective Town game"></canvas>

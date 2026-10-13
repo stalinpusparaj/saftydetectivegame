@@ -26,10 +26,11 @@ https://github.com/stalinpusparaj.
 
 Third-party components
 The following are not covered by this notice and keep their own licenses:
-- Three.js 0.160.0, MIT License, copyright the three.js authors. Loaded from
-  jsDelivr.
-- Baloo 2 and Baloo Thambi 2 fonts, SIL Open Font License 1.1, copyright
-  Ek Type. Loaded from Google Fonts.
+- Three.js 0.160.0 in vendor/three/, MIT License, copyright the three.js
+  authors. See vendor/three/LICENSE.
+- Baloo 2 and Baloo Thambi 2 fonts in fonts/, SIL Open Font License 1.1,
+  copyright The Baloo 2 Project Authors. See fonts/OFL-baloo2.txt and
+  fonts/OFL-baloothambi2.txt.
 
 Disclaimer
 The game is a learning aid for young children. It does not replace adult

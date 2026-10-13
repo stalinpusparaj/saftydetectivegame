@@ -1,13 +1,15 @@
 /* Safety Detective Town — service worker for offline play.
+   Everything the game needs comes from this site (Three.js and the fonts are
+   bundled in vendor/ and fonts/), so nothing is fetched from other servers.
    - The game page is network-first (so updates arrive when online) with a
      3.5 s timeout, falling back to the cached copy when offline.
-   - Three.js and Google Fonts are pinned, so they are cache-first.
+   - vendor/ and fonts/ never change at the same address, so they are cache-first.
    - Other files from this site (icons, manifest, future audio/ voice files)
      are served from cache and quietly refreshed in the background.
    - When the page asks (on resume) or a slow load fell back to the cache, a
      newer index.html is stored and open pages get {type:'update-ready'}.
    Bump CACHE_VERSION only to force everything to be fetched again. */
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v2';
 const CACHE = `sdt-${CACHE_VERSION}`;
 
 const CORE = [
@@ -19,38 +21,20 @@ const CORE = [
   './apple-touch-icon.png',
   './icon-512.png',
   './icon-maskable-512.png',
-  'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js',
+  './vendor/three/three.module.min.js',
+  './fonts/baloo2-latin.woff2',
+  './fonts/baloothambi2-tamil.woff2',
+  './fonts/baloothambi2-latin.woff2',
 ];
-const FONT_CSS = 'https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Baloo+Thambi+2:wght@500;700;800&display=swap';
-const PINNED_HOSTS = ['cdn.jsdelivr.net', 'fonts.googleapis.com', 'fonts.gstatic.com'];
+const IMMUTABLE_DIRS = ['vendor/', 'fonts/'];
 
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE);
     await cache.addAll(CORE.map(u => new Request(u, { cache: 'reload' })));
-    // Fonts are best effort: the game still works with system fonts.
-    try { await cacheFonts(cache); } catch (e) { /* retried at runtime */ }
     await self.skipWaiting();
   })());
 });
-
-/* Cache the font stylesheet plus the Latin and Tamil font files it points to. */
-async function cacheFonts(cache) {
-  const res = await fetch(FONT_CSS, { mode: 'cors' });
-  if (!res.ok) return;
-  const css = await res.clone().text();
-  await cache.put(FONT_CSS, res);
-  const urls = [];
-  const blocks = css.split('/*').slice(1);
-  for (const b of blocks) {
-    const subset = b.slice(0, b.indexOf('*/')).trim();
-    if (subset !== 'latin' && subset !== 'tamil') continue;
-    const m = b.match(/url\((https:\/\/fonts\.gstatic\.com\/[^)]+)\)/);
-    if (m) urls.push(m[1]);
-  }
-  if (!urls.length) urls.push(...[...css.matchAll(/url\((https:\/\/fonts\.gstatic\.com\/[^)]+)\)/g)].map(m => m[1]));
-  await Promise.all(urls.map(u => fetch(u, { mode: 'cors' }).then(r => r.ok && cache.put(u, r)).catch(() => {})));
-}
 
 self.addEventListener('activate', event => {
   event.waitUntil((async () => {
@@ -71,8 +55,10 @@ self.addEventListener('fetch', event => {
     event.respondWith(isGame ? pageNetworkFirst(req) : otherPage(req));
     return;
   }
-  if (PINNED_HOSTS.includes(url.hostname)) { event.respondWith(cacheFirst(req)); return; }
-  if (url.origin === self.location.origin) { event.respondWith(staleWhileRevalidate(req)); return; }
+  if (url.origin !== self.location.origin) return; // the game loads nothing from other sites
+  const scope = new URL(self.registration.scope).pathname;
+  const rel = url.pathname.startsWith(scope) ? url.pathname.slice(scope.length) : url.pathname;
+  event.respondWith(IMMUTABLE_DIRS.some(d => rel.startsWith(d)) ? cacheFirst(req) : staleWhileRevalidate(req));
 });
 
 self.addEventListener('message', event => {

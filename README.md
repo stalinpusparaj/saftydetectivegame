@@ -72,7 +72,7 @@ The game collects no personal data. After it loads, its only network use is a ch
 
 ## Technical notes
 
-- One file: `index.html`. It uses Three.js 0.160.0 from jsDelivr and the Baloo 2 / Baloo Thambi 2 fonts from Google Fonts. Every character and prop is built from code, with no image, model or audio files.
+- The game is `index.html`, with Three.js 0.160.0 bundled in `vendor/three/` and the Baloo 2 / Baloo Thambi 2 fonts in `fonts/`, so it loads everything from this site and contacts no other server. Every character and prop is built from code, with no image, model or audio files.
 - **Offline:** `sw.js` caches the page, icons, Three.js and the fonts. The page itself is fetched fresh whenever the device is online, so updates to `index.html` reach players on their next visit. If you change other files (icons, manifest, audio), bump `CACHE_VERSION` in `sw.js` so devices fetch the new copies. When a newer version is published, players see an **update banner** the next time they are in town (never in the middle of a case) and can tap **Update** or dismiss it.
 - **Recorded voice-over:** put files at `audio/<lang>/<lineId>.mp3` (for example `audio/ta/intro_kitchen.mp3`), then set `CONFIG.recordedVoice.ta` (or `.en`) to `true` in `index.html`. Until then the game uses the device's text-to-speech, and every line also shows as a caption.
 - **Tamil text:** all lines are drafts. A native Tamil speaker who works with young children should review them before release.
