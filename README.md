@@ -14,6 +14,12 @@ Best on a phone held sideways, in Chrome. No sign-in, no ads.
 
 **Works offline:** after the first visit, the game is saved on the device and plays without internet (for example, installed on a phone in airplane mode).
 
+## Gameplay
+
+<img src="screenshots/en/gameplay.gif" alt="Gameplay of The Kitchen Clues: tapping a pan whose handle sticks out shows a preview of it falling, Inspector Gaja explains the danger, a second tap turns the handle in, then tapping a covered plug point shows that it is already safe" width="640">
+
+*Case 1, The Kitchen Clues: tap a danger to see what could happen, tap again to fix it, and tap a safe look-alike to hear why it is already safe.*
+
 ## The cases
 
 | # | Case | Place | What the child does |
