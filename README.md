@@ -1,5 +1,7 @@
 # Safety Detective Town · பாதுகாப்பு துப்பறியும் நகரம்
 
+**English** | [தமிழ்](README.ta.md)
+
 [![Anil the squirrel detective, Inspector Gaja, Constable Vaalu and Nari the Trickster in the Detective Town square](thumbnail.jpg)](https://stalinpusparaj.github.io/saftydetectivegame/)
 
 **▶ Play: https://stalinpusparaj.github.io/saftydetectivegame/**
