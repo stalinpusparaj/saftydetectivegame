@@ -285,6 +285,16 @@ body.ta .logo h1{font-size:clamp(26px,6.2vmin,58px)}
 @keyframes glitchCanvas{0%{filter:none}33%{filter:hue-rotate(18deg) contrast(1.15);transform:translateX(-5px)}66%{filter:hue-rotate(-12deg) brightness(1.08);transform:translateX(4px)}100%{filter:none;transform:none}}
 body.rm #game.glitch,body.rm #tabletFrame.glitch .bezel{animation:none}
 
+/* ---------- update banner ---------- */
+#updateBanner{position:fixed;left:50%;top:calc(86px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:15;display:flex;align-items:center;gap:12px;
+  background:var(--paper);border-radius:40px;padding:6px 8px 6px 20px;box-shadow:var(--lift);font-weight:800;font-size:clamp(15px,3vmin,20px);line-height:1.2;
+  width:max-content;max-width:calc(100vw - 32px);pointer-events:auto;animation:cardIn .45s cubic-bezier(.34,1.56,.64,1)}
+#updateBanner > .ic{font-size:30px;line-height:1}
+#updateBanner .tx{min-width:0;text-wrap:balance}
+#updateBanner .btn{flex:0 0 auto}
+#updateBanner .btn.round .ic{font-size:26px}
+body.rm #updateBanner{animation:none}
+
 /* ---------- wipe, rotate, boot ---------- */
 #wipe{position:fixed;inset:0;pointer-events:none;z-index:60;overflow:hidden}
 #wipe .hole{position:absolute;left:50%;top:50%;width:300vmax;height:300vmax;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 0 300vmax var(--blue);transition:width .42s ease-in,height .42s ease-in}
@@ -2402,6 +2412,7 @@ const SM = {
       if (!first) await UI.wipe(false);
       this.busy = false; Input.locked = false;
       Promise.resolve().then(() => st.start(params)).catch(e => console.error(e));
+      Updates.flush();
     } catch (e) { console.error(e); this.busy = false; Input.locked = false; if (!first) UI.wipe(false); }
   },
   goHub(opts = {}) { return this.go(HubStage, opts); },
@@ -4507,13 +4518,54 @@ function boot() {
   // fetch every font weight now, so switching language later makes no network request
   try { if (document.fonts) ['500', '700', '800'].forEach(w => { document.fonts.load(`${w} 20px "Baloo 2"`, 'Aa'); document.fonts.load(`${w} 20px "Baloo Thambi 2"`, 'தமிழ்'); }); } catch (e) {}
   $('#boot').hidden = true;
-  if (CONFIG.debug) window.SDT = { S, SM, CASES, Save, Progress, Learning, Voice, UI, Engine, Tween, HubStage, CaseStage, RewardStage, PickerStage, PatrolStage, Session };
+  if (CONFIG.debug) window.SDT = { Updates, S, SM, CASES, Save, Progress, Learning, Voice, UI, Engine, Tween, HubStage, CaseStage, RewardStage, PickerStage, PatrolStage, Session };
   const q = new URLSearchParams(location.search);
   // debug only: keep simulating while the tab is hidden (automated testing)
   if (CONFIG.debug && q.has('tick')) { let last = performance.now(); setInterval(() => { const now = performance.now(); let el = Math.min(1.5, (now - last) / 1000); last = now; if (!document.hidden) return; while (el > 0.0001) { const d = Math.min(0.05, el); el -= d; Tween.update(d); if (SM.stage) SM.stage.update(d); } if (SM.stage) { Engine.renderer.render(SM.stage.scene, SM.stage.camera); Markers.update(SM.stage.camera); Hand.update(SM.stage.camera); } }, 33); }
   if (CONFIG.debug && q.get('case')) { if (!S.profile.avatar) S.profile.avatar = 'anil'; SM.go(CaseStage, { caseId: q.get('case') }); return; }
   SM.go(HubStage, { title: true });
 }
+/* Update banner: shown when the service worker has a newer game ready. It waits
+   until the child is back in town (never mid-case) and is dismissable. The only
+   network use is a check of this site's own index.html when the game returns to
+   the foreground, at most every 30 minutes; nothing about the player is sent. */
+L({
+  update_ready: ['A new version of the game is ready!', 'விளையாட்டின் புதிய பதிப்பு தயார்!'],
+  update_now: ['Update', 'புதுப்பி'],
+});
+const Updates = {
+  pending: false, shown: false, lastCheck: Date.now(),
+  init() {
+    try {
+      if (!('serviceWorker' in navigator) || !/^https?:$/.test(location.protocol)) return;
+      const sw = navigator.serviceWorker, hadController = !!sw.controller;
+      sw.addEventListener('message', e => { if (e.data && e.data.type === 'update-ready') this.ready(); });
+      sw.addEventListener('controllerchange', () => { if (hadController) this.ready(); });
+      document.addEventListener('visibilitychange', () => { if (!document.hidden) this.check(); });
+    } catch (e) {}
+  },
+  check(force) {
+    if (!force && Date.now() - this.lastCheck < 30 * 60e3) return;
+    this.lastCheck = Date.now();
+    try {
+      const sw = navigator.serviceWorker;
+      if (sw.controller) sw.controller.postMessage({ type: 'check-update' });
+      sw.getRegistration().then(r => r && r.update()).catch(() => {});
+    } catch (e) {}
+  },
+  ready() { this.pending = true; this.flush(); },
+  /* called after every stage change too: only interrupt in town or on the title */
+  flush() {
+    if (!this.pending || this.shown) return;
+    if (SM.stage && !(SM.stage instanceof HubStage || SM.stage instanceof PickerStage)) return;
+    this.shown = true;
+    const b = UI.el(`<div id="updateBanner" role="status"><span class="ic">✨</span><span class="tx" data-t="update_ready"></span><button class="btn primary" id="updNow"><span class="ic">🔄</span><span data-t="update_now"></span></button><button class="btn round" id="updLater" data-ta="close"><span class="ic">✖</span></button></div>`);
+    document.body.appendChild(b); UI.applyLang(b); Sfx.play('chime');
+    $('#updNow').addEventListener('click', () => { Sfx.play('click'); b.querySelector('#updNow').disabled = true; location.reload(); });
+    $('#updLater').addEventListener('click', () => { Sfx.play('click'); b.remove(); this.pending = false; });
+  },
+};
+
 /* Offline play: register the service worker (sw.js). Skipped on file://, where
    service workers are unavailable (e.g. sandboxed previews), and in ?debug
    sessions unless &sw is added, so test runs never serve stale files. */
@@ -4525,7 +4577,7 @@ function registerServiceWorker() {
     if (document.readyState === 'complete') go(); else addEventListener('load', go, { once: true });
   } catch (e) {}
 }
-try { boot(); registerServiceWorker(); } catch (e) { console.error(e); const m = document.getElementById('bootMsg'); if (m) m.textContent = 'Something went wrong. Please reload. / பிழை. மீண்டும் திறக்கவும்.'; }
+try { boot(); registerServiceWorker(); Updates.init(); } catch (e) { console.error(e); const m = document.getElementById('bootMsg'); if (m) m.textContent = 'Something went wrong. Please reload. / பிழை. மீண்டும் திறக்கவும்.'; }
 </script>
 <script>
   /* If Three.js could not load (offline / blocked), show a friendly bilingual message. */
