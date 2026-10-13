@@ -27,6 +27,23 @@ Best on a phone held sideways, in Chrome. No sign-in, no ads.
 
 Cases unlock in order. Before each new case, a short **Daily Patrol** reviews earlier lessons, focusing on the ones the child found hardest.
 
+## Screenshots
+
+<table>
+<tr>
+<td width="50%" valign="top"><img src="screenshots/en/1-kitchen.jpg" alt="Kitchen diorama with a yellow warning ring on a pan whose handle sticks out over the stove" width="100%"><br><b>1 · The Kitchen Clues</b><br>A hazard found: Inspector Gaja explains why the pan handle is dangerous.</td>
+<td width="50%" valign="top"><img src="screenshots/en/2-park.jpg" alt="Frozen park scene behind three picture cards about what happens if Vaalu sits on an ant hill" width="100%"><br><b>2 · Park Patrol</b><br>The scene freezes: what happens next?</td>
+</tr>
+<tr>
+<td width="50%" valign="top"><img src="screenshots/en/3-door.jpg" alt="Peephole view of Nari in a delivery disguise with clue tags and three choice buttons" width="100%"><br><b>3 · Knock Knock, Who's There?</b><br>Clues through the peephole, then choose what to do.</td>
+<td width="50%" valign="top"><img src="screenshots/en/4-video-call.jpg" alt="Video call with Nari wearing a smiling friend mask, his tail showing, and three choice buttons" width="100%"><br><b>4 · The Video Call Twin</b><br>A masked 'best friend' asks for a secret.</td>
+</tr>
+<tr>
+<td width="50%" valign="top"><img src="screenshots/en/5-pool.jpg" alt="Pool scene with a three-step story timeline and a hand pointing at the first moment" width="100%"><br><b>5 · Rewind at the Pool</b><br>Rewind the story and change one moment.</td>
+<td width="50%" valign="top"><img src="screenshots/en/6-call-112.jpg" alt="Street scene with Vaalu dizzy after bumping his head and a large phone keypad showing 1 1 2" width="100%"><br><b>6 · Call 112!</b><br>Dial 1-1-2 on the big keypad.</td>
+</tr>
+</table>
+
 ## Cast
 
 - **Anil** (squirrel), **Minnu** (kitten), **Kanmani** (calf): the child's detective
