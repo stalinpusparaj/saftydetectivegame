@@ -10,6 +10,8 @@ Best on a phone held sideways, in Chrome. No sign-in, no ads.
 
 **Install on Android:** open the link in Chrome, tap ⋮, then **Install app** (or **Add to Home screen**). It opens full-screen in landscape like a normal app.
 
+**Works offline:** after the first visit, the game is saved on the device and plays without internet (for example, installed on a phone in airplane mode).
+
 ## The cases
 
 | # | Case | Place | What the child does |
@@ -39,11 +41,12 @@ Tap ⚙️, hold the hand button for 3 seconds, then answer the sum to open the 
 - see what your child is learning, with tips to talk about at home
 - reset progress
 
-The game collects no personal data and makes no network requests after it loads. Progress is saved only in this browser on this device.
+The game collects no personal data and makes no network requests after it loads (the first visit downloads the files it needs for offline play). Progress is saved only in this browser on this device.
 
 ## Technical notes
 
 - One file: `index.html`. It uses Three.js 0.160.0 from jsDelivr and the Baloo 2 / Baloo Thambi 2 fonts from Google Fonts. Every character and prop is built from code, with no image, model or audio files.
+- **Offline:** `sw.js` caches the page, icons, Three.js and the fonts. The page itself is fetched fresh whenever the device is online, so updates to `index.html` reach players on their next visit. If you change other files (icons, manifest, audio), bump `CACHE_VERSION` in `sw.js` so devices fetch the new copies.
 - **Recorded voice-over:** put files at `audio/<lang>/<lineId>.mp3` (for example `audio/ta/intro_kitchen.mp3`), then set `CONFIG.recordedVoice.ta` (or `.en`) to `true` in `index.html`. Until then the game uses the device's text-to-speech, and every line also shows as a caption.
 - **Tamil text:** all lines are drafts. A native Tamil speaker who works with young children should review them before release.
 - **Developer flags** (only active with `?debug` in the address): `?debug` shows fps and draw calls, `&case=<id>` jumps straight to a case, `&tick` keeps the game running in a hidden tab, and `&nostore` simulates blocked storage.

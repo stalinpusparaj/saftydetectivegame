@@ -4514,7 +4514,18 @@ function boot() {
   if (CONFIG.debug && q.get('case')) { if (!S.profile.avatar) S.profile.avatar = 'anil'; SM.go(CaseStage, { caseId: q.get('case') }); return; }
   SM.go(HubStage, { title: true });
 }
-try { boot(); } catch (e) { console.error(e); const m = document.getElementById('bootMsg'); if (m) m.textContent = 'Something went wrong. Please reload. / பிழை. மீண்டும் திறக்கவும்.'; }
+/* Offline play: register the service worker (sw.js). Skipped on file://, where
+   service workers are unavailable (e.g. sandboxed previews), and in ?debug
+   sessions unless &sw is added, so test runs never serve stale files. */
+function registerServiceWorker() {
+  try {
+    if (!('serviceWorker' in navigator) || !/^https?:$/.test(location.protocol)) return;
+    if (CONFIG.debug && !/[?&]sw\b/.test(location.search)) return;
+    const go = () => navigator.serviceWorker.register('sw.js').catch(() => {});
+    if (document.readyState === 'complete') go(); else addEventListener('load', go, { once: true });
+  } catch (e) {}
+}
+try { boot(); registerServiceWorker(); } catch (e) { console.error(e); const m = document.getElementById('bootMsg'); if (m) m.textContent = 'Something went wrong. Please reload. / பிழை. மீண்டும் திறக்கவும்.'; }
 </script>
 <script>
   /* If Three.js could not load (offline / blocked), show a friendly bilingual message. */
