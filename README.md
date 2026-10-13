@@ -6,7 +6,9 @@
 
 A bilingual (English + தமிழ்) 3D browser game that helps children aged 4–7 *think* about safety: spot real dangers among safe look-alikes, predict what happens next, ask a grown-up when unsure, rewind a mistake, and call 112.
 
-Best on a phone held sideways, in Chrome. No install, no sign-in, no ads.
+Best on a phone held sideways, in Chrome. No sign-in, no ads.
+
+**Install on Android:** open the link in Chrome, tap ⋮, then **Install app** (or **Add to Home screen**). It opens full-screen in landscape like a normal app.
 
 ## The cases
 
