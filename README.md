@@ -1,5 +1,7 @@
 # Safety Detective Town · பாதுகாப்பு துப்பறியும் நகரம்
 
+[![Anil the squirrel detective, Inspector Gaja, Constable Vaalu and Nari the Trickster in the Detective Town square](thumbnail.jpg)](https://stalinpusparaj.github.io/saftydetectivegame/)
+
 **▶ Play: https://stalinpusparaj.github.io/saftydetectivegame/**
 
 A bilingual (English + தமிழ்) 3D browser game that helps children aged 4–7 *think* about safety: spot real dangers among safe look-alikes, predict what happens next, ask a grown-up when unsure, rewind a mistake, and call 112.
