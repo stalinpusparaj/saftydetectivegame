@@ -68,6 +68,8 @@ Tap ⚙️, hold the hand button for 3 seconds, then answer the sum to open the 
 
 The game collects no personal data. After it loads, its only network use is a check for a newer version of the game when it is reopened (at most every 30 minutes), which sends nothing about the player. The first visit also downloads the files it needs for offline play. Progress is saved only in this browser on this device.
 
+**Privacy policy:** https://stalinpusparaj.github.io/saftydetectivegame/privacy.html (English and Tamil). Grown-ups can also open it from the Parent corner.
+
 ## Technical notes
 
 - One file: `index.html`. It uses Three.js 0.160.0 from jsDelivr and the Baloo 2 / Baloo Thambi 2 fonts from Google Fonts. Every character and prop is built from code, with no image, model or audio files.

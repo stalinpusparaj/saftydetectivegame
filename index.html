@@ -56,6 +56,7 @@ button:focus-visible{outline:4px solid var(--warm);outline-offset:3px}
 .btn{pointer-events:auto;min-width:var(--tap);min-height:var(--tap);border-radius:var(--r-md);background:var(--paper);box-shadow:var(--lift);
   display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:6px 22px;font-weight:800;font-size:clamp(18px,3.2vmin,26px);line-height:1.1;transition:transform .12s, box-shadow .12s}
 .btn:active{transform:translateY(4px);box-shadow:0 2px 0 #C7D3E8}
+a.btn{text-decoration:none;color:inherit}
 .btn .ic{font-size:1.7em;line-height:1}
 .btn.primary{background:var(--blue);color:#fff;box-shadow:0 6px 0 var(--blue-d),0 12px 24px rgba(43,42,58,.2)}
 .btn.primary:active{box-shadow:0 2px 0 var(--blue-d)}
@@ -533,6 +534,7 @@ L({
   yes_erase: ['Yes, erase', 'ஆம், அழி'],
   cancel: ['Cancel', 'ரத்து'],
   change_detective: ['Change detective', 'துப்பறிவாளரை மாற்று'],
+  privacy_policy: ['Privacy policy', 'தனியுரிமைக் கொள்கை'],
   privacy_note: ['No ads, no tracking, no sign-in. Progress is saved only on this device.', 'விளம்பரம் இல்லை, கண்காணிப்பு இல்லை, உள்நுழைவு இல்லை. முன்னேற்றம் இந்தச் சாதனத்தில் மட்டுமே சேமிக்கப்படுகிறது.'],
   storage_off: ['Saving is blocked on this device, so progress resets when the game closes.', 'இந்தச் சாதனத்தில் சேமிப்பு தடுக்கப்பட்டுள்ளது. விளையாட்டை மூடினால் முன்னேற்றம் அழியும்.'],
   session_played: ['Cases played this session: {n}', 'இந்த அமர்வில் விளையாடிய வழக்குகள்: {n}'],
@@ -2290,6 +2292,7 @@ const Parent = {
         <div style="display:flex;gap:10px;flex-wrap:wrap">
           <button class="btn" id="dChange"><span class="ic">🔄</span><span data-t="change_detective"></span></button>
           <button class="btn" id="dReset"><span class="ic">🗑️</span><span data-t="reset"></span></button>
+          <a class="btn" id="dPrivacy" href="privacy.html"><span class="ic">🔒</span><span data-t="privacy_policy"></span></a>
         </div>
         <p class="small">${Store.ok ? '' : '<b data-t="storage_off"></b><br>'}<span data-t="privacy_note"></span> · v${CONFIG.version}</p>
       </div>

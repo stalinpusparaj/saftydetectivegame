@@ -64,7 +64,13 @@ self.addEventListener('fetch', event => {
   const req = event.request;
   if (req.method !== 'GET' || req.headers.has('range')) return; // media range requests go straight to the network
   const url = new URL(req.url);
-  if (req.mode === 'navigate') { event.respondWith(pageNetworkFirst(req)); return; }
+  if (req.mode === 'navigate') {
+    // only the game itself is the game page; other pages (e.g. privacy.html) keep their own cache entry
+    const scope = new URL(self.registration.scope).pathname;
+    const isGame = url.pathname === scope || url.pathname === scope + 'index.html';
+    event.respondWith(isGame ? pageNetworkFirst(req) : otherPage(req));
+    return;
+  }
   if (PINNED_HOSTS.includes(url.hostname)) { event.respondWith(cacheFirst(req)); return; }
   if (url.origin === self.location.origin) { event.respondWith(staleWhileRevalidate(req)); return; }
 });
@@ -110,6 +116,17 @@ async function pageNetworkFirst(req) {
     servedFromCache = true;
     network.catch(() => {}); // a slow response still refreshes the cache when it lands
     return (await cache.match('./index.html')) || (await cache.match('./')) || network;
+  }
+}
+
+async function otherPage(req) {
+  const cache = await caches.open(CACHE);
+  try {
+    const res = await fetch(req);
+    if (res.status === 200) cache.put(req, res.clone()).catch(() => {});
+    return res;
+  } catch (e) {
+    return (await cache.match(req, { ignoreSearch: true })) || Response.error();
   }
 }
 
