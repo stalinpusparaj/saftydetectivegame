@@ -75,3 +75,7 @@ The game collects no personal data. After it loads, its only network use is a ch
 - **Recorded voice-over:** put files at `audio/<lang>/<lineId>.mp3` (for example `audio/ta/intro_kitchen.mp3`), then set `CONFIG.recordedVoice.ta` (or `.en`) to `true` in `index.html`. Until then the game uses the device's text-to-speech, and every line also shows as a caption.
 - **Tamil text:** all lines are drafts. A native Tamil speaker who works with young children should review them before release.
 - **Developer flags** (only active with `?debug` in the address): `?debug` shows fps and draw calls, `&case=<id>` jumps straight to a case, `&tick` keeps the game running in a hidden tab, `&nostore` simulates blocked storage, and `&sw` turns the offline service worker back on (it is off in debug sessions so tests never see stale files).
+
+## License
+
+Copyright (c) 2026 stalinpusparaj. All rights reserved. You may play the game and view the code, but not copy, modify or reuse the code, characters or stories without permission. See [LICENSE](LICENSE).
