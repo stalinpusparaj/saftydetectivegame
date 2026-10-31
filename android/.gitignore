@@ -1,0 +1,20 @@
+# Local machine config — never shared, points at this machine's SDK path
+local.properties
+# Signing secrets — the keystore itself must NEVER be committed; only its
+# public SHA-256 fingerprint goes in the website's assetlinks.json
+keystore.properties
+*.jks
+*.keystore
+
+# Build output
+.gradle/
+build/
+app/build/
+captures/
+.cxx/
+
+# Editor
+.idea/
+*.iml
+.DS_Store
+local.properties.bak

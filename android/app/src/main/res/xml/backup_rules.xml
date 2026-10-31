@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Pre-Android-12 backup rules. The only thing this app stores locally
+     (outside the web game's own browser storage, which Android backs up
+     with the rest of the app's data by default) is a single "last
+     opened" timestamp — nothing worth excluding. -->
+<full-backup-content />

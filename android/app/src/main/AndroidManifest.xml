@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Thin Kotlin "shell" that puts the Safety Detective Town PWA
+  (https://stalinpusparaj.github.io/saftydetectivegame/) on the Play
+  Store as a Trusted Web Activity: the game itself stays the single
+  index.html at the repo root, so an update there reaches the Android
+  app too, with no separate app release needed for game-content changes.
+
+  See android/README.md for how DEFAULT_URL below relates to the
+  website's own /.well-known/assetlinks.json, and docs/keystore-and-signing.md
+  for how the signing key proves this app owns that site to Chrome.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- For the local "come back and play" reminder in ReminderWorker.kt.
+         Required at runtime on Android 13+; requested from LauncherActivity. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:manageSpaceActivity="com.google.androidbrowserhelper.trusted.ManageDataLauncherActivity"
+        android:theme="@android:style/Theme.Translucent.NoTitleBar">
+
+        <!-- Dual declaration (app <-> website), the standard Digital
+             Asset Links two-way handshake: this statement is this app's
+             own claim; the matching .well-known/assetlinks.json on the
+             website is the website's confirmation of it. -->
+        <meta-data
+            android:name="asset_statements"
+            android:resource="@string/asset_statements" />
+
+        <activity android:name="com.google.androidbrowserhelper.trusted.ManageDataLauncherActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.customtabs.trusted.MANAGE_SPACE_URL"
+                android:value="https://stalinpusparaj.github.io/saftydetectivegame/privacy.html" />
+        </activity>
+
+        <activity android:name=".LauncherActivity"
+            android:label="@string/app_name"
+            android:exported="true">
+
+            <meta-data android:name="android.support.customtabs.trusted.DEFAULT_URL"
+                android:value="https://stalinpusparaj.github.io/saftydetectivegame/" />
+
+            <meta-data android:name="android.support.customtabs.trusted.STATUS_BAR_COLOR"
+                android:resource="@color/skyColor" />
+            <meta-data android:name="android.support.customtabs.trusted.STATUS_BAR_COLOR_DARK"
+                android:resource="@color/skyColor" />
+            <meta-data android:name="android.support.customtabs.trusted.NAVIGATION_BAR_COLOR"
+                android:resource="@color/skyColor" />
+            <meta-data android:name="android.support.customtabs.trusted.NAVIGATION_BAR_COLOR_DARK"
+                android:resource="@color/skyColor" />
+
+            <!-- The game locks to landscape and already shows its own
+                 "turn your phone sideways" prompt in portrait as a
+                 fallback (see index.html #rotate), so this is a belt
+                 and braces match, not a substitute for it. -->
+            <meta-data android:name="android.support.customtabs.trusted.SCREEN_ORIENTATION"
+                android:value="landscape" />
+
+            <meta-data android:name="android.support.customtabs.trusted.DISPLAY_MODE"
+                android:value="immersive" />
+
+            <meta-data android:name="android.support.customtabs.trusted.SPLASH_IMAGE_DRAWABLE"
+                android:resource="@drawable/splash" />
+            <meta-data android:name="android.support.customtabs.trusted.SPLASH_SCREEN_BACKGROUND_COLOR"
+                android:resource="@color/skyColor" />
+            <meta-data android:name="android.support.customtabs.trusted.SPLASH_SCREEN_FADE_OUT_DURATION"
+                android:value="300" />
+
+            <meta-data android:name="android.support.customtabs.trusted.FILE_PROVIDER_AUTHORITY"
+                android:value="@string/provider_authority" />
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <!-- Verified against stalinpusparaj.github.io's own
+                 /.well-known/assetlinks.json (domain root, not this
+                 project's subpath — that's how Digital Asset Links
+                 verification always works). Scoped to this game's own
+                 subpath with pathPrefix, so this app never claims to
+                 handle this account's other github.io pages. -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="https"
+                    android:host="stalinpusparaj.github.io"
+                    android:pathPrefix="/saftydetectivegame/" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name="com.google.androidbrowserhelper.trusted.FocusActivity"
+            android:exported="false" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="@string/provider_authority"
+            android:grantUriPermissions="true"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
+
+        <service
+            android:name="com.google.androidbrowserhelper.trusted.DelegationService"
+            android:exported="true"
+            tools:ignore="ExportedService">
+            <!-- The TrustedWebActivityService this is based on does its
+                 own caller-identity access control, so the usual
+                 "exported service needs a permission" lint warning does
+                 not apply here. -->
+            <intent-filter>
+                <action android:name="android.support.customtabs.trusted.TRUSTED_WEB_ACTIVITY_SERVICE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
+
+    </application>
+</manifest>

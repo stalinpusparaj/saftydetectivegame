@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Safety Detective Town</string>
+    <string name="provider_authority">com.gemmyapps.safetydetectivetown.fileprovider</string>
+
+    <!-- Dual Digital Asset Links declaration: this app's own claim about
+         which website it is tied to. The matching confirmation lives at
+         https://stalinpusparaj.github.io/.well-known/assetlinks.json
+         (domain root, not the game's own /saftydetectivegame/ subpath —
+         that file lives in the separate stalinpusparaj.github.io repo). -->
+    <string name="asset_statements">
+        [{
+            \"relation\": [\"delegate_permission/common.handle_all_urls\"],
+            \"target\": {
+                \"namespace\": \"web\",
+                \"site\": \"https://stalinpusparaj.github.io/saftydetectivegame/\"}
+        }]
+    </string>
+
+    <string name="reminder_channel_name">Detective reminders</string>
+    <string name="reminder_channel_description">A gentle once-a-day nudge if a case has been waiting a while</string>
+    <string name="reminder_title">A case is waiting! 🔍</string>
+    <string name="reminder_text">Inspector Gaja has a new mystery for you in Detective Town.</string>
+</resources>

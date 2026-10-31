@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">பாதுகாப்பு துப்பறியும் நகரம்</string>
+
+    <string name="reminder_channel_name">துப்பறிவாளர் நினைவூட்டல்கள்</string>
+    <string name="reminder_channel_description">வழக்கு சிறிது நேரமாகக் காத்திருந்தால் நாளொன்றுக்கு ஒருமுறை மென்மையான நினைவூட்டல்</string>
+    <string name="reminder_title">ஒரு வழக்கு காத்திருக்கிறது! 🔍</string>
+    <string name="reminder_text">துப்பறியும் நகரத்தில் இன்ஸ்பெக்டர் கஜாவிடம் உனக்காக ஒரு புதிய புதிர் இருக்கிறது.</string>
+</resources>

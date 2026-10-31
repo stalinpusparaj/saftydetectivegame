@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Matches the web game's own palette (CONFIG / :root tokens in
+         index.html), so the splash screen and system bars feel like a
+         continuation of the game rather than a different app wrapped
+         around it. -->
+    <color name="skyColor">#BFE6FF</color>
+    <color name="skyAccent">#3B6FD8</color>
+</resources>
