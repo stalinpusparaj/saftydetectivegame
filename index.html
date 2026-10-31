@@ -2194,8 +2194,15 @@ const Markers = {
       m.d.style.display = '';
       // keep tappable bubbles out from under the top bar: drop them below their anchor
       const h = m.h || (m.h = m.d.offsetHeight || 80), y = s.y + m.dy;
-      const flip = !m.d.classList.contains('nohit') && y - h < 86;
-      m.d.style.transform = `translate3d(${s.x.toFixed(1)}px,${y.toFixed(1)}px,0) translate(-50%,${flip ? '-8%' : '-100%'})`;
+      // hysteresis: flip and un-flip at different thresholds so a bubble that
+      // sits right on the line doesn't flicker between the two positions
+      // every frame as the camera moves.
+      if (!m.d.classList.contains('nohit')) {
+        if (m.flipped == null) m.flipped = y - h < 86;
+        else if (m.flipped && y - h >= 96) m.flipped = false;
+        else if (!m.flipped && y - h < 76) m.flipped = true;
+      } else m.flipped = false;
+      m.d.style.transform = `translate3d(${s.x.toFixed(1)}px,${y.toFixed(1)}px,0) translate(-50%,${m.flipped ? '-8%' : '-100%'})`;
     }
   },
 };
@@ -2974,6 +2981,9 @@ class PickerStage extends Stage {
     const k = this.kids[i]; k.cheer(1);
     this.kids.forEach((o, j) => { o.root.rotation.y = 0; if (j !== i) o.wave(0.6); });
     $('#pickGo').hidden = false; Hand.show({ el: $('#pickGo') });
+    // update the profile now (not only on final confirm) so the greeting
+    // bubble's icon matches the character just tapped, not a leftover one
+    S.profile.avatar = k.id;
     await this.say(SPECIES[AVATARS[k.id]].hi, k);
   }
   exit() { UI.hide('#scrPicker'); }
