@@ -237,6 +237,22 @@ body.ta .logo h1{font-size:clamp(26px,6.2vmin,58px)}
 .wi.on{box-shadow:0 0 0 5px var(--blue),0 4px 0 #E1E7F2}
 .wi .sw{width:40px;height:40px;border-radius:50%;border:4px solid #fff;box-shadow:0 0 0 2px rgba(43,42,58,.2)}
 
+.rankCard{margin-bottom:16px;background:#fff;border-radius:20px;box-shadow:0 4px 0 #E1E7F2;padding:12px 16px;display:flex;align-items:center;gap:14px}
+.rankCard .rc-ic{font-size:clamp(34px,7vmin,48px);line-height:1;flex:0 0 auto}
+.rankCard .rc-body{flex:1 1 auto;min-width:0}
+.rankCard .rc-name{font-weight:800;font-size:clamp(16px,2.8vmin,21px);color:var(--ink)}
+.rankCard .rc-bar{margin-top:5px;height:12px;border-radius:7px;background:#EEF1F7;overflow:hidden}
+.rankCard .rc-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--warm));border-radius:7px;transition:width .5s}
+.rankCard .rc-streak{flex:0 0 auto;font-weight:800;font-size:15px;background:#FFF4E6;color:var(--warm-d);border-radius:14px;padding:6px 12px;white-space:nowrap}
+
+.badges{margin-top:16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.badges h3{grid-column:1/-1;font-size:20px;margin:0}
+.badge{background:#fff;border-radius:16px;box-shadow:0 4px 0 #E1E7F2;padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center}
+.badge.locked{opacity:.4;filter:grayscale(1)}
+.badge .bd-ic{font-size:30px;line-height:1}
+.badge .bd-n{font-weight:800;font-size:12.5px;line-height:1.15}
+.badge .bd-d{font-size:11px;color:var(--muted);line-height:1.2}
+
 /* reward */
 #rewardUI{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:24px;pointer-events:none;padding:80px 16px 110px}
 .rcard{background:#fff;border-radius:28px;box-shadow:var(--lift);padding:14px 18px;display:flex;flex-direction:column;align-items:center;gap:6px;animation:cardIn .6s cubic-bezier(.34,1.56,.64,1) backwards;max-width:40vw}
@@ -245,6 +261,22 @@ body.ta .logo h1{font-size:clamp(26px,6.2vmin,58px)}
 .stars{font-size:clamp(34px,7vmin,56px);letter-spacing:4px;color:var(--warm);text-shadow:0 3px 0 #fff;line-height:1}
 .stars .e{color:#C9D3E3}
 #rewardBtns{position:absolute;bottom:calc(14px + env(safe-area-inset-bottom,0px));left:0;right:0;display:flex;justify-content:center;gap:16px;pointer-events:none}
+
+/* ---------- badge / rank-up celebration pop-ups ---------- */
+.badgePop,.rankPop{position:absolute;left:50%;top:14%;transform:translate(-50%,0);z-index:12;background:#fff;border-radius:28px;padding:16px 28px;display:flex;flex-direction:column;align-items:center;gap:2px;box-shadow:var(--lift);text-align:center;max-width:min(86vw,420px);animation:cardIn .5s cubic-bezier(.34,1.56,.64,1);transition:opacity .4s,transform .4s}
+.badgePop.out,.rankPop.out{opacity:0;transform:translate(-50%,-14px)}
+.badgePop .bp-ic,.rankPop .rp-ic{font-size:clamp(46px,9vmin,70px);line-height:1}
+.badgePop .bp-title,.rankPop .rp-title{font-size:15px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--warm-d)}
+.badgePop .bp-name{font-size:clamp(19px,3.4vmin,26px);font-weight:800;color:var(--ink)}
+.badgePop .bp-desc{font-size:14px;font-weight:600;color:var(--muted)}
+.rankPop .rp-sub{font-size:14px;font-weight:700;color:var(--muted)}
+.rankPop .rp-name{font-size:clamp(20px,3.6vmin,28px);font-weight:800;color:var(--blue)}
+body.rm .badgePop,body.rm .rankPop{animation:none}
+
+/* ---------- hub rank + streak pill ---------- */
+#rankPill{position:relative;font-size:26px}
+#rankPill .streakDot{position:absolute;top:-4px;right:-6px;background:var(--warm);color:#fff;font-size:11px;font-weight:800;line-height:1;border-radius:10px;padding:3px 5px;box-shadow:0 2px 0 var(--warm-d);display:flex;align-items:center;gap:1px}
+
 
 /* rest */
 #scrRest .panel{text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;background:#2F3B6B;color:#fff}
@@ -353,6 +385,7 @@ body.rm #hand span{animation-duration:2.4s}
     <div class="tb">
       <button id="btnHome" class="tbtn" data-ta="back_to_town" hidden>🏠</button>
       <button id="btnBook" class="tbtn" data-ta="notebook" hidden>📒</button>
+      <button id="rankPill" class="tbtn" hidden></button>
       <div id="hudSlots" hidden></div>
     </div>
     <div class="tb">
@@ -383,7 +416,9 @@ body.rm #hand span{animation-duration:2.4s}
   <button class="btn round xbtn" data-close data-ta="close"><span class="ic">✖</span></button>
   <div class="panel">
     <h2>📒 <span data-t="notebook"></span></h2>
+    <div class="rankCard" id="rankCard"></div>
     <div class="album" id="album"></div>
+    <div class="badges" id="badges"></div>
     <div class="wardrobe" id="wardrobe"></div>
   </div>
 </section>
@@ -637,7 +672,8 @@ const CONCEPTS = ['fire', 'electricity', 'sharp', 'medicine', 'nature', 'strange
 const DEFAULTS = {
   settings: { lang: 'en', voice: true, music: true, sfx: true, reducedMotion: PREFERS_REDUCED, sessionLimit: CONFIG.defaultSessionLimit },
   profile: { avatar: null, costume: { cap: 'blue', magnifier: 'classic', scarf: 'none' } },
-  progress: { done: {}, stars: {}, owned: ['cap:blue', 'magnifier:classic', 'scarf:none'], patrol: {}, seenUnlock: 0, welcomed: false },
+  progress: { done: {}, stars: {}, owned: ['cap:blue', 'magnifier:classic', 'scarf:none'], patrol: {}, seenUnlock: 0, welcomed: false,
+    xp: 0, badges: [], seenLangs: [], streakCount: 0, streakLastDay: '', pendingRankUp: null, pendingBadges: [] },
   mastery: Object.fromEntries(CONCEPTS.map(c => [c, 0])),
   session: { count: 0, last: 0 },
 };
@@ -2079,6 +2115,7 @@ const UI = {
     $('#btnParent').addEventListener('click', () => { Sfx.play('click'); Parent.open(); });
     $('#btnHome').addEventListener('click', () => { Sfx.play('click'); SM.goHub(); });
     $('#btnBook').addEventListener('click', () => { Sfx.play('click'); Notebook.open(); });
+    $('#rankPill').addEventListener('click', () => { Sfx.play('click'); Notebook.open(); });
     $$('[data-close]').forEach(b => b.addEventListener('click', () => { Sfx.play('click'); b.closest('.screen').hidden = true; b.closest('.screen').dispatchEvent(new Event('closed')); }));
     $('#verLine').textContent = 'v' + CONFIG.version;
     if (CONFIG.debug) document.body.insertAdjacentHTML('beforeend', '<div id="dbg"></div>');
@@ -2096,6 +2133,7 @@ const UI = {
   },
   toggleLang() {
     S.settings.lang = S.settings.lang === 'en' ? 'ta' : 'en'; Save.save('settings');
+    Gamify.recordLang(S.settings.lang);
     Sfx.play('pop'); this.applyLang(); Voice.relang();
   },
   caption(text, speaker, style) {
@@ -2111,7 +2149,12 @@ const UI = {
   },
   captionDone() { clearTimeout(this.capTimer); this.capTimer = setTimeout(() => this.cap.classList.add('off'), 1800); },
   captionClear() { clearTimeout(this.capTimer); this.cap.classList.add('off'); },
-  topbar({ home = false, book = false } = {}) { $('#btnHome').hidden = !home; $('#btnBook').hidden = !book; },
+  topbar({ home = false, book = false, rank = false } = {}) { $('#btnHome').hidden = !home; $('#btnBook').hidden = !book; $('#rankPill').hidden = !rank; if (rank) this.updateRankPill(); },
+  updateRankPill() {
+    const p = S.progress, r = Gamify.rank(p.xp), streak = p.streakCount >= 2 ? `<span class="streakDot">🔥${p.streakCount}</span>` : '';
+    $('#rankPill').innerHTML = `${r.icon}${streak}`;
+    $('#rankPill').setAttribute('aria-label', t(r.key));
+  },
   el(html) { const tp = document.createElement('template'); tp.innerHTML = html.trim(); return tp.content.firstElementChild; },
   add(html, parent) { const e = this.el(html); (parent || this.stageUI).appendChild(e); this.applyLang(e); return e; },
   clearStage() { this.stageUI.innerHTML = ''; this.cards.innerHTML = ''; this.hud(null); $('#game').classList.remove('frozen', 'glitch'); },
@@ -2325,6 +2368,11 @@ const COSTUME_ITEMS = [
 const Notebook = {
   open() { Voice.stop(); UI.show('#scrBook'); this.render(); Sfx.play('pop'); },
   render() {
+    const p = S.progress, idx = Gamify.rankIndex(p.xp), r = RANKS[idx], next = RANKS[idx + 1];
+    const pct = next ? clamp((p.xp - r.xp) / (next.xp - r.xp) * 100, 4, 100) : 100;
+    const rc = $('#rankCard');
+    rc.innerHTML = `<div class="rc-ic">${r.icon}</div><div class="rc-body"><div class="rc-name" data-t="${r.key}"></div><div class="rc-bar"><div class="rc-fill" style="width:${pct}%"></div></div></div>`
+      + (p.streakCount >= 2 ? `<div class="rc-streak">🔥 <span data-t="streak_days" data-tv='${JSON.stringify({ n: p.streakCount })}'></span></div>` : '');
     const album = $('#album');
     album.innerHTML = CASES.map(c => {
       const done = !!S.progress.done[c.id], st = S.progress.stars[c.id] || 0;
@@ -2339,6 +2387,11 @@ const Notebook = {
     wr.innerHTML = `<h3>👕 <span data-t="costumes"></span></h3>` + COSTUME_ITEMS.map(it => {
       const [type, val] = it.id.split(':'), owned = S.progress.owned.includes(it.id), on = S.profile.costume[type] === val;
       return `<button class="wi ${owned ? '' : 'locked'} ${on ? 'on' : ''}" data-cos="${it.id}" data-ta="${it.label}" ${owned ? '' : 'disabled'}>${it.sw ? `<span class="sw" style="background:${it.sw}"></span>` : it.ic}</button>`;
+    }).join('');
+    const bw = $('#badges');
+    bw.innerHTML = `<h3>🎖️ <span data-t="your_badges"></span></h3>` + BADGES.map(b => {
+      const got = p.badges.includes(b.id);
+      return `<div class="badge ${got ? '' : 'locked'}"><div class="bd-ic">${got ? b.icon : '🔒'}</div><div class="bd-n" data-t="${b.n}"></div><div class="bd-d" data-t="${b.d}"></div></div>`;
     }).join('');
     UI.applyLang($('#scrBook'));
     $$('[data-replay]').forEach(b => b.addEventListener('click', () => { UI.hide('#scrBook'); SM.startCase(b.dataset.replay); }));
@@ -2445,11 +2498,15 @@ const Progress = {
   unlockedCount() { return CASES.filter(c => this.status(c) !== 'locked').length; },
   complete(c, result) {
     const p = S.progress;
+    const first = !p.done[c.id];
     p.done[c.id] = true;
     p.stars[c.id] = Math.max(p.stars[c.id] || 0, result.stars || 1);
     const cos = c.reward.costume;
     if (cos && !p.owned.includes(cos)) { p.owned.push(cos); const [type, val] = cos.split(':'); S.profile.costume[type] = val; }
     Save.save('progress'); Save.save('profile');
+    // XP rewards real, first-time progress more than a replay, but a
+    // replay still earns a little — never a zero for coming back to play.
+    Gamify.addXP(first ? 40 + 15 * (result.stars || 1) : 5);
   },
 };
 
@@ -2743,10 +2800,15 @@ class HubStage extends Stage {
     this.beginPlay(fromCase);
   }
   async beginPlay(fromCase) {
-    this.mode = 'play'; UI.topbar({ book: true }); if (!this.marks) this.addMarkers();
+    this.mode = 'play'; UI.topbar({ book: true, rank: true }); if (!this.marks) this.addMarkers();
     if (Session.needsRest()) { this.gaja.yawn(); await this.say('gaja_yawn', this.gaja); Rest.show(); return; }
     const unlocked = Progress.unlockedCount();
     const next = Progress.nextCase();
+    if (Streak.announce) {
+      Streak.announce = false;
+      await this.sleep(0.4); this.sparkle(this.gaja.root.position.clone().add(V3(0, 2, 0)), 14);
+      await this.say('streak_days', this.gaja, { vars: { n: S.progress.streakCount } });
+    }
     if (!S.progress.welcomed) {
       S.progress.welcomed = true; Save.save('progress');
       await this.sleep(0.6);
@@ -3042,6 +3104,7 @@ class RewardStage extends Stage {
       this.kid = this.addChar(makeKidAvatar()); this.kid.root.position.copy(p); this.kid.root.rotation.y = ry; this.kid.cheer(1);
       await this.say('new_costume', this.gaja, { speaker: 'gaja' });
     }
+    await Celebrations.flush(this);
     const btns = UI.add(`<div id="rewardBtns"><button class="btn primary big pulse" id="rwHome"><span class="ic">🏠</span><span data-t="back_to_town"></span></button><button class="btn big" id="rwBook"><span class="ic">📒</span></button></div>`);
     $('#rwHome').onclick = () => { Sfx.play('click'); SM.goHub({ fromCase: true }); };
     $('#rwBook').onclick = () => { Sfx.play('click'); Notebook.open(); };
@@ -4382,6 +4445,122 @@ const PATROL_BANK = [
   { id: 'q_112', concept: 'emergency_call', kind: 'cards', prompt: 'pq_hurt112', cards: [{ art: '📞', label: 'call_112', correct: true }, { art: '🙈', label: 'pq_hide' }, { art: '🏃', label: 'pq_runaway' }] },
   { id: 'q_tell', concept: 'emergency_call', kind: 'cards', prompt: 'pq_tell112', cards: [{ art: '📍 🚏', label: 'pq_where', correct: true }, { art: '🎨', label: 'pq_colour' }] },
 ];
+/* ==========================================================================
+   GAMIFICATION  (Detective Rank/XP, daily streak, Badge wall)
+   All of this is local progress only — no accounts, no leaderboard, no
+   pressure: ranks only ever go up, a broken streak quietly resets with no
+   scolding, and nothing here is timed. See Celebrations below for how a
+   rank-up or new badge is shown, always at a natural pause (the reward
+   screen after a case), never interrupting play.
+   ========================================================================== */
+L({
+  rank_trainee: ['Trainee Sleuth', 'பயிற்சி துப்பறிவாளர்'],
+  rank_junior: ['Junior Detective', 'ஜூனியர் துப்பறிவாளர்'],
+  rank_ace: ['Ace Detective', 'திறமையான துப்பறிவாளர்'],
+  rank_master: ['Master Detective', 'மாஸ்டர் துப்பறிவாளர்'],
+  rank_legendary: ['Legendary Detective', 'புகழ்பெற்ற துப்பறிவாளர்'],
+  rank_up_title: ['Rank up!', 'தரம் உயர்வு!'],
+  rank_up_body: ['You are now a', 'இப்போது நீ'],
+  xp_gained: ['+{n} XP', '+{n} XP'],
+  streak_days: ['{n}-day streak!', '{n} நாட்கள் தொடர்ச்சி!'],
+  badge_earned_title: ['New badge!', 'புதிய பேட்ஜ்!'],
+  badge_first_case_n: ['First Clue', 'முதல் தடயம்'],
+  badge_first_case_d: ['Solve your first case', 'உன் முதல் வழக்கைத் தீர்'],
+  badge_perfect_case_n: ['Perfect Detective', 'சரியான துப்பறிவாளர்'],
+  badge_perfect_case_d: ['Earn 3 stars on any case', 'ஏதேனும் ஒரு வழக்கில் 3 நட்சத்திரங்கள் பெறு'],
+  badge_all_cases_n: ['Town Protector', 'நகரைக் காப்பவர்'],
+  badge_all_cases_d: ['Solve all 6 cases', 'எல்லா 6 வழக்குகளையும் தீர்'],
+  badge_all_perfect_n: ['Triple Star Town', 'மூன்று நட்சத்திர நகரம்'],
+  badge_all_perfect_d: ['Earn 3 stars on every case', 'ஒவ்வொரு வழக்கிலும் 3 நட்சத்திரங்கள் பெறு'],
+  badge_bilingual_n: ['Two Languages', 'இரு மொழிகள்'],
+  badge_bilingual_d: ['Play in English and in Tamil', 'ஆங்கிலத்திலும் தமிழிலும் விளையாடு'],
+  badge_mastery_n: ['Sharp Memory', 'கூர்மையான நினைவாற்றல்'],
+  badge_mastery_d: ['Reach top marks on 5 safety topics', '5 பாதுகாப்புத் தலைப்புகளில் முழு மதிப்பெண் பெறு'],
+  badge_patrol_n: ['Quick Reviewer', 'விரைவான மறுபார்வையாளர்'],
+  badge_patrol_d: ['Complete 3 Daily Patrols', '3 தினசரி ரோந்துகளை முடி'],
+  badge_wardrobe_n: ['Dressed for the Job', 'வேலைக்கு ஏற்ற உடை'],
+  badge_wardrobe_d: ['Unlock every costume piece', 'எல்லா உடைகளையும் திற'],
+  your_badges: ['Badges', 'பேட்ஜ்கள்'],
+});
+const RANKS = [
+  { key: 'rank_trainee', xp: 0, icon: '🔍' },
+  { key: 'rank_junior', xp: 80, icon: '🕵️' },
+  { key: 'rank_ace', xp: 200, icon: '⭐' },
+  { key: 'rank_master', xp: 350, icon: '🏅' },
+  { key: 'rank_legendary', xp: 500, icon: '👑' },
+];
+const BADGES = [
+  { id: 'first_case', icon: '🔍', n: 'badge_first_case_n', d: 'badge_first_case_d', check: p => Object.keys(p.done).length >= 1 },
+  { id: 'perfect_case', icon: '🌟', n: 'badge_perfect_case_n', d: 'badge_perfect_case_d', check: p => Object.values(p.stars).some(s => s >= 3) },
+  { id: 'all_cases', icon: '🏠', n: 'badge_all_cases_n', d: 'badge_all_cases_d', check: p => CASES.every(c => p.done[c.id]) },
+  { id: 'all_perfect', icon: '🌠', n: 'badge_all_perfect_n', d: 'badge_all_perfect_d', check: p => CASES.every(c => (p.stars[c.id] || 0) >= 3) },
+  { id: 'bilingual', icon: '🌐', n: 'badge_bilingual_n', d: 'badge_bilingual_d', check: p => (p.seenLangs || []).includes('en') && (p.seenLangs || []).includes('ta') },
+  { id: 'mastery', icon: '🧠', n: 'badge_mastery_n', d: 'badge_mastery_d', check: () => CONCEPTS.filter(c => (S.mastery[c] || 0) >= 3).length >= 5 },
+  { id: 'patrol', icon: '⚡', n: 'badge_patrol_n', d: 'badge_patrol_d', check: p => Object.keys(p.patrol || {}).length >= 3 },
+  { id: 'wardrobe', icon: '👔', n: 'badge_wardrobe_n', d: 'badge_wardrobe_d', check: p => COSTUME_ITEMS.every(it => (p.owned || []).includes(it.id)) },
+];
+const Gamify = {
+  rankIndex(xp) { let i = 0; for (let k = 0; k < RANKS.length; k++) if (xp >= RANKS[k].xp) i = k; return i; },
+  rank(xp) { return RANKS[this.rankIndex(xp)]; },
+  addXP(n) {
+    const p = S.progress, before = this.rankIndex(p.xp);
+    p.xp += n;
+    const after = this.rankIndex(p.xp);
+    if (after > before) p.pendingRankUp = after;
+    this.checkBadges();
+    Save.save('progress');
+  },
+  checkBadges() {
+    const p = S.progress;
+    for (const b of BADGES) {
+      if (!p.badges.includes(b.id) && b.check(p)) { p.badges.push(b.id); p.pendingBadges.push(b.id); }
+    }
+  },
+  recordLang(lang) { const p = S.progress; if (!p.seenLangs.includes(lang)) { p.seenLangs.push(lang); this.checkBadges(); Save.save('progress'); } },
+};
+const Streak = {
+  today() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; },
+  touch() {
+    const p = S.progress, today = this.today();
+    if (p.streakLastDay === today) return;
+    const prev = p.streakLastDay ? new Date(p.streakLastDay + 'T00:00:00') : null;
+    const isYesterday = prev && Math.round((new Date(today + 'T00:00:00') - prev) / 86400000) === 1;
+    p.streakCount = isYesterday ? p.streakCount + 1 : 1;
+    p.streakLastDay = today;
+    if (p.streakCount >= 2) this.announce = true;
+    Save.save('progress');
+  },
+};
+const Celebrations = {
+  async flush(stage) {
+    while (S.progress.pendingBadges.length) {
+      const id = S.progress.pendingBadges.shift(); Save.save('progress');
+      const b = BADGES.find(x => x.id === id); if (b) await this.showBadge(stage, b);
+    }
+    if (S.progress.pendingRankUp != null) {
+      const idx = S.progress.pendingRankUp; S.progress.pendingRankUp = null; Save.save('progress');
+      await this.showRankUp(stage, idx);
+    }
+  },
+  async showBadge(stage, b) {
+    Sfx.play('sparkle');
+    if (stage.gaja) stage.sparkle(stage.gaja.root.position.clone().add(V3(0, 2, 0)), 18);
+    const el = UI.add(`<div class="badgePop"><div class="bp-ic">${b.icon}</div><div class="bp-title" data-t="badge_earned_title"></div><div class="bp-name" data-t="${b.n}"></div><div class="bp-desc" data-t="${b.d}"></div></div>`);
+    if (stage.gaja) await stage.say(b.n, stage.gaja, { speaker: 'gaja' }); else await stage.sleep(1.4);
+    await stage.sleep(0.5);
+    el.classList.add('out'); setTimeout(() => el.remove(), 400);
+  },
+  async showRankUp(stage, idx) {
+    const r = RANKS[idx];
+    Sfx.play('chime');
+    if (stage.confetti) stage.confetti(V3(0, 2, 0), 60);
+    if (stage.sparkle) stage.sparkle(V3(0, 2.2, 0), 28);
+    const el = UI.add(`<div class="rankPop"><div class="rp-ic">${r.icon}</div><div class="rp-title" data-t="rank_up_title"></div><div class="rp-sub" data-t="rank_up_body"></div><div class="rp-name" data-t="${r.key}"></div></div>`);
+    if (stage.gaja) { await stage.say('rank_up_title', stage.gaja, { speaker: 'gaja' }); await stage.say(r.key, stage.gaja, { speaker: 'gaja' }); } else await stage.sleep(1.6);
+    await stage.sleep(0.6);
+    el.classList.add('out'); setTimeout(() => el.remove(), 400);
+  },
+};
 const Learning = {
   record(concept, ok) {
     if (!(concept in S.mastery)) return;
@@ -4465,7 +4644,7 @@ class PatrolStage extends Stage {
       if (ok) { UI.hudFill(done, '⭐'); done++; }
       else { Learning.requeue(this.queue, i, q); UI.hud(this.queue.length, '⭐'); for (let k = 0; k < done; k++) UI.hudFill(k, '⭐'); }
     }
-    S.progress.patrol[this.next] = true; Save.save('progress');
+    S.progress.patrol[this.next] = true; Save.save('progress'); Gamify.addXP(10);
     this.kid.cheer(1); this.confetti(V3(0, 2, 0), 60);
     await this.say('patrol_done', this.gaja);
     SM.go(CaseStage, { caseId: this.next });
@@ -4516,6 +4695,8 @@ function boot() {
   if (CONFIG.debug && /[?&]nostore\b/.test(location.search)) { const boom = () => { throw new Error('blocked'); }; Storage.prototype.getItem = boom; Storage.prototype.setItem = boom; Storage.prototype.removeItem = boom; }
   buildStrings();
   Save.load();
+  Streak.touch();
+  Gamify.recordLang(S.settings.lang);
   initMaterials();
   UI.init();
   Voice.init();
@@ -4525,7 +4706,7 @@ function boot() {
   // fetch every font weight now, so switching language later makes no network request
   try { if (document.fonts) ['500', '700', '800'].forEach(w => { document.fonts.load(`${w} 20px "Baloo 2"`, 'Aa'); document.fonts.load(`${w} 20px "Baloo Thambi 2"`, 'தமிழ்'); }); } catch (e) {}
   $('#boot').hidden = true;
-  if (CONFIG.debug) window.SDT = { Updates, S, SM, CASES, Save, Progress, Learning, Voice, UI, Engine, Tween, HubStage, CaseStage, RewardStage, PickerStage, PatrolStage, Session };
+  if (CONFIG.debug) window.SDT = { Updates, S, SM, CASES, Save, Progress, Learning, Voice, UI, Engine, Tween, HubStage, CaseStage, RewardStage, PickerStage, PatrolStage, Session, Gamify, RANKS, BADGES, Streak, Celebrations, COSTUME_ITEMS, Notebook, Parent, Gate };
   const q = new URLSearchParams(location.search);
   // debug only: keep simulating while the tab is hidden (automated testing)
   if (CONFIG.debug && q.has('tick')) { let last = performance.now(); setInterval(() => { const now = performance.now(); let el = Math.min(1.5, (now - last) / 1000); last = now; if (!document.hidden) return; while (el > 0.0001) { const d = Math.min(0.05, el); el -= d; Tween.update(d); if (SM.stage) SM.stage.update(d); } if (SM.stage) { Engine.renderer.render(SM.stage.scene, SM.stage.camera); Markers.update(SM.stage.camera); Hand.update(SM.stage.camera); } }, 33); }

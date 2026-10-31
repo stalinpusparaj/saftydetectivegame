@@ -46,7 +46,7 @@ Don't go straight to Production for a first release — Closed testing catches p
 - [ ] Store listing (English): paste title, short description, and full description from `playstore/listing-en.md`.
 - [ ] Store listing (Tamil): in Play Console, add Tamil as an additional language, then paste from `playstore/listing-ta.md`.
 - [ ] Screenshots: use the images in `screenshots/en/` and `screenshots/ta/`. Play requires at least 2 phone screenshots at minimum 320px on the short side — the existing 1280x720 case screenshots in these folders qualify.
-- [ ] Feature graphic and hi-res icon: use the files in `playstore/assets/` once generated.
+- [ ] Feature graphic and hi-res icon: use `playstore/assets/feature-graphic-1024x500.jpg` and `playstore/assets/hi-res-icon-512.png`.
 - [ ] Double-check character limits — `playstore/listing-en.md` and `playstore/listing-ta.md` each state the character count under their title, short description, and full description; re-count after any edit to confirm they stay within Play's limits (title ≤30, short description ≤80, full description ≤4000).
 
 ## 6. Content rating and Data safety
