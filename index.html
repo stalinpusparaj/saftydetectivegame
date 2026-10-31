@@ -4490,6 +4490,8 @@ L({
   badge_patrol_d: ['Complete 3 Daily Patrols', '3 தினசரி ரோந்துகளை முடி'],
   badge_wardrobe_n: ['Dressed for the Job', 'வேலைக்கு ஏற்ற உடை'],
   badge_wardrobe_d: ['Unlock every costume piece', 'எல்லா உடைகளையும் திற'],
+  badge_streak_n: ['On the Case', 'வழக்கில் கவனம்'],
+  badge_streak_d: ['Play 3 days in a row', 'தொடர்ந்து 3 நாட்கள் விளையாடு'],
   your_badges: ['Badges', 'பேட்ஜ்கள்'],
 });
 const RANKS = [
@@ -4508,6 +4510,7 @@ const BADGES = [
   { id: 'mastery', icon: '🧠', n: 'badge_mastery_n', d: 'badge_mastery_d', check: () => CONCEPTS.filter(c => (S.mastery[c] || 0) >= 3).length >= 5 },
   { id: 'patrol', icon: '⚡', n: 'badge_patrol_n', d: 'badge_patrol_d', check: p => Object.keys(p.patrol || {}).length >= 3 },
   { id: 'wardrobe', icon: '👔', n: 'badge_wardrobe_n', d: 'badge_wardrobe_d', check: p => COSTUME_ITEMS.every(it => (p.owned || []).includes(it.id)) },
+  { id: 'streak', icon: '🔥', n: 'badge_streak_n', d: 'badge_streak_d', check: p => (p.streakCount || 0) >= 3 },
 ];
 const Gamify = {
   rankIndex(xp) { let i = 0; for (let k = 0; k < RANKS.length; k++) if (xp >= RANKS[k].xp) i = k; return i; },
@@ -4538,6 +4541,7 @@ const Streak = {
     p.streakCount = isYesterday ? p.streakCount + 1 : 1;
     p.streakLastDay = today;
     if (p.streakCount >= 2) this.announce = true;
+    Gamify.checkBadges();
     Save.save('progress');
   },
 };
